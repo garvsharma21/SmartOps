@@ -1,26 +1,48 @@
 import { useState } from "react";
-import { Eye, EyeOff, Mail, Lock, User, Layers } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Layers, Phone } from "lucide-react";
 // import { useAuth } from "../contexts/AuthContext"; // AUTH PLACEHOLDER
 
 export default function SignupPage({ onNavigateToLogin }) {
   // const { signUp } = useAuth(); // AUTH PLACEHOLDER
 
   const [formData, setFormData] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
+    phone: "",
+    businessType: "",
+    businessName: "",
+    gstin: "",
     password: "",
-    agreeToTerms: false,
+    confirmPassword: "",
+    agreeToTerms: false
   });
 
+
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
     setError("");
 
-    if (!formData.fullName || !formData.email || !formData.password) {
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.businessType ||
+      !formData.businessName ||
+      !formData.gstin ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
       setError("Please fill in all fields");
       return;
     }
@@ -191,18 +213,88 @@ export default function SignupPage({ onNavigateToLogin }) {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-2 gap-4">
+
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="First Name"
+                    value={formData.firstName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, firstName: e.target.value })
+                    }
+                    className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-lg"
+                  />
+                </div>
+
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Last Name"
+                    value={formData.lastName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, lastName: e.target.value })
+                    }
+                    className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-lg"
+                  />
+                </div>
+
+              </div>
+
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
-                  type="text"
-                  placeholder="Full Name"
-                  value={formData.fullName}
+                  type="tel"
+                  placeholder="Phone Number"
+                  value={formData.phone}
                   onChange={(e) =>
-                    setFormData({ ...formData, fullName: e.target.value })
+                    setFormData({ ...formData, phone: e.target.value })
                   }
                   className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-lg"
                 />
               </div>
+
+              <div className="relative">
+                <Layers className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Business Type"
+                  value={formData.businessType}
+                  onChange={(e) =>
+                    setFormData({ ...formData, businessType: e.target.value })
+                  }
+                  className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-lg"
+                />
+              </div>
+
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Business Name"
+                  value={formData.businessName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, businessName: e.target.value })
+                  }
+                  className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-lg"
+                />
+              </div>
+
+              <div className="relative">
+                <Layers className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="GSTIN"
+                  value={formData.gstin}
+                  onChange={(e) =>
+                    setFormData({ ...formData, gstin: e.target.value })
+                  }
+                  className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-lg"
+                />
+              </div>
+
 
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -237,6 +329,32 @@ export default function SignupPage({ onNavigateToLogin }) {
                 </button>
               </div>
 
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Confirm Password"
+                  value={formData.confirmPassword}
+                  onChange={(e) =>
+                    setFormData({ ...formData, confirmPassword: e.target.value })
+                  }
+                  className="w-full pl-12 pr-12 py-4 border-2 border-gray-200 rounded-lg"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                >
+                  {showConfirmPassword ? <EyeOff /> : <Eye />}
+                </button>
+              </div>
+              {formData.confirmPassword &&
+                formData.password !== formData.confirmPassword && (
+                  <p className="text-red-500 text-sm mt-1">
+                    Passwords do not match
+                  </p>
+                )}
+
               <div className="flex items-start space-x-3">
                 <input
                   type="checkbox"
@@ -255,10 +373,31 @@ export default function SignupPage({ onNavigateToLogin }) {
 
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full bg-blue-600 text-white py-4 rounded-lg"
+                disabled={
+                  !formData.firstName ||
+                  !formData.lastName ||
+                  !formData.email ||
+                  !formData.phone ||
+                  !formData.businessType ||
+                  !formData.businessName ||
+                  !formData.password ||
+                  formData.password !== formData.confirmPassword ||
+                  !formData.agreeToTerms
+                }
+                className={`w-full py-4 rounded-lg text-white font-semibold transition ${!formData.firstName ||
+                    !formData.lastName ||
+                    !formData.email ||
+                    !formData.phone ||
+                    !formData.businessType ||
+                    !formData.businessName ||
+                    !formData.password ||
+                    formData.password !== formData.confirmPassword ||
+                    !formData.agreeToTerms
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                  }`}
               >
-                {loading ? "Creating Account..." : "Create Account"}
+                Create Account
               </button>
             </form>
 
