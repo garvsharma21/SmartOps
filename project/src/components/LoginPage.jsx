@@ -7,7 +7,7 @@ export default function LoginPage({ onNavigateToSignup }) {
   // const { signIn } = useAuth(); // AUTH PLACEHOLDER
 
   const [formData, setFormData] = useState({
-    email: "",
+    emailOrPhone: "",
     password: "",
   });
 
@@ -19,12 +19,40 @@ export default function LoginPage({ onNavigateToSignup }) {
     e.preventDefault();
     setError("");
 
-    if (!formData.email || !formData.password) {
+    if (!formData.emailOrPhone || !formData.password) {
       setError("Please fill in all fields");
       return;
     }
 
     setLoading(true);
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/auth/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email_or_phone: formData.emailOrPhone,
+          password: formData.password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if(!res.ok) {
+        setError(data.error || "Failed to store login input");
+        return;
+      }
+
+      console.log("Stored in DB: ", data);
+    }
+    catch (err) {
+      setError("Server error. Please try again.");
+    }
+    finally {
+      setLoading(false);
+    }
 
     /*
     // AUTH PLACEHOLDER (enable later)
@@ -39,11 +67,6 @@ export default function LoginPage({ onNavigateToSignup }) {
       return;
     }
     */
-
-    setTimeout(() => {
-      console.log("Login clicked (auth not wired yet)", formData);
-      setLoading(false);
-    }, 800);
   };
 
   return (
@@ -189,11 +212,11 @@ export default function LoginPage({ onNavigateToSignup }) {
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
-                  type="email"
-                  placeholder="Business Email"
-                  value={formData.email}
+                  type="text"
+                  placeholder="Enter Email or Phone Number"
+                  value={formData.emailOrPhone}
                   onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
+                    setFormData({ ...formData, emailOrPhone: e.target.value })
                   }
                   className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:outline-none"
                 />
@@ -273,3 +296,4 @@ export default function LoginPage({ onNavigateToSignup }) {
     </div>
   );
 }
+

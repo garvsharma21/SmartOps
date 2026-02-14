@@ -26,11 +26,12 @@ export default function SignupPage({ onNavigateToLogin }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match");
       return;
     }
-    setError("");
 
     if (
       !formData.firstName ||
@@ -39,7 +40,6 @@ export default function SignupPage({ onNavigateToLogin }) {
       !formData.phone ||
       !formData.businessType ||
       !formData.businessName ||
-      !formData.gstin ||
       !formData.password ||
       !formData.confirmPassword
     ) {
@@ -54,25 +54,41 @@ export default function SignupPage({ onNavigateToLogin }) {
 
     setLoading(true);
 
-    /*
-    // AUTH PLACEHOLDER (will be re-enabled later)
-    const { error: signUpError } = await signUp(
-      formData.email,
-      formData.password,
-      formData.fullName
-    );
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/auth/register/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          businessType: formData.businessType,
+          businessName: formData.businessName,
+          gstin: formData.gstin,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+          agreeToTerms: formData.agreeToTerms,
+        }),
+      });
 
-    if (signUpError) {
-      setError(signUpError.message);
-      setLoading(false);
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Signup failed");
+        return;
+      }
+
+      onNavigateToLogin();
     }
-    */
-
-    setTimeout(() => {
-      console.log("Signup clicked (auth not wired yet)", formData);
+    catch(err) {
+      setError("Server error. Please try again.");
+    }
+    finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
   return (
@@ -374,6 +390,7 @@ export default function SignupPage({ onNavigateToLogin }) {
               <button
                 type="submit"
                 disabled={
+                  loading ||
                   !formData.firstName ||
                   !formData.lastName ||
                   !formData.email ||
@@ -384,7 +401,8 @@ export default function SignupPage({ onNavigateToLogin }) {
                   formData.password !== formData.confirmPassword ||
                   !formData.agreeToTerms
                 }
-                className={`w-full py-4 rounded-lg text-white font-semibold transition ${!formData.firstName ||
+                className={`w-full py-4 rounded-lg text-white font-semibold transition ${loading ||
+                    !formData.firstName ||
                     !formData.lastName ||
                     !formData.email ||
                     !formData.phone ||
